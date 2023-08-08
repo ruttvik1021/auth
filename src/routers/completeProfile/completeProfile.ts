@@ -3,10 +3,16 @@ import {
   authApiEndPoints,
   currentUserMessagesAndErrors,
 } from "../../constants/constants";
-import { body, validationResult } from "express-validator";
+import {
+  ResultFactory,
+  ValidationError,
+  body,
+  validationResult,
+} from "express-validator";
 import { User } from "../../models/user";
 import { TokenValidator } from "../../middlewares/token-handler";
 import { UserDetails } from "../../models/userDetails";
+import { messages, parameters, length } from "./constants";
 
 const router = express.Router();
 
@@ -26,63 +32,65 @@ const router = express.Router();
 router.put(
   authApiEndPoints.completeProfile,
   [
-    body("organizationName")
-      .isString()
-      .withMessage("Must be a string")
-      .isLength({ min: 3, max: 50 })
-      .withMessage("Must be between 3 to 50 characters")
+    body(parameters.organizationName)
+      .isLength({
+        min: length.orgNameLength.min,
+        max: length.orgNameLength.max,
+      })
+      .withMessage(messages.orgNameLength)
       .notEmpty()
-      .withMessage("Required"),
-    body("organizationLogo").isString().notEmpty().withMessage("Required"),
-    body("name")
+      .withMessage(messages.organizationNameRequired),
+    body(parameters.organizationLogo)
       .isString()
-      .withMessage("Must have only characters")
-      .isLength({ min: 3, max: 50 })
-      .withMessage("Max length is 50 characters")
+      .notEmpty()
+      .withMessage(messages.orgLogoRequired),
+    body(parameters.name)
+      .isString()
+      .withMessage(messages.nameCharacters)
+      .isLength({ min: length.name.min, max: length.name.max })
+      .withMessage(messages.nameLength)
       .custom((value) => {
         if (value.includes("  ")) {
-          throw new Error("Name should not contain double spaces");
+          throw new Error(messages.doubleSpacesNotAllowed);
         }
         return true;
       })
       .custom((value) => {
         if (/\d/.test(value)) {
-          throw new Error("Name should not contain numbers");
+          throw new Error(messages.numbersNotAllowed);
         }
         return true;
       })
       .trim()
       .notEmpty()
-      .withMessage("Name is Required"),
-    // body("termAccepted").isBoolean().withMessage("Must be a Boolean"),
-    body("mobileNumber")
-      .isNumeric()
-      .withMessage("Must be a Number")
-      .isLength({ max: 10 })
-      .withMessage("Must not be above 10 digits"),
-    // body("retailTypeId").isString().withMessage("Required"),
-    body("retailType").isString().withMessage("Required"),
-    body("aboutus")
-      .isLength({ max: 250 })
-      .withMessage("Not more than 250 characters"),
-    body("email").isEmail().notEmpty().withMessage("Required"),
-    body("address")
+      .withMessage(messages.nameRequired),
+    body(parameters.mobileNumber)
       .isString()
-      .isLength({ max: 250 })
-      .withMessage("Maximum 250 letters allowed")
+      .withMessage(messages.mobileNumberRequired),
+    body(parameters.industryId)
+      .isString()
+      .withMessage(messages.industryRequired),
+    // body(parameters.aboutus)
+    //   .isLength({ max: length.aboutUs.max })
+    //   .withMessage(messages.aboutUsLength),
+    body(parameters.email)
+      .isEmail()
       .notEmpty()
-      .withMessage("Required"),
+      .withMessage(messages.emailRequired),
+    body(parameters.address)
+      .isString()
+      .isLength({ max: length.address.max })
+      .withMessage(messages.addressLength)
+      .notEmpty()
+      .withMessage(messages.addressRequired),
   ],
   TokenValidator(""),
   async (req: Request, res: Response) => {
-    const errors: any = validationResult(req);
+    const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      console.log("errors.array()", errors.array()[0].path);
       return res.status(400).send({
-        message: `${errors.array()[0]?.path?.toUpperCase()} : ${
-          errors.array()[0].msg
-        }`,
+        message: errors.array()[0].msg,
       });
     }
     const { email } = req.body;
@@ -101,7 +109,9 @@ router.put(
         .send({ message: currentUserMessagesAndErrors.didNotFindUser });
     }
 
-    res.status(200).send({ body: req.body });
+    res
+      .status(200)
+      .send({ body: req.body, message: messages.profileUpdatedSuccessfully });
   }
 );
 

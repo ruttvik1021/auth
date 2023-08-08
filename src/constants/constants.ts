@@ -7,6 +7,7 @@ export const authApiEndPoints = {
   currentUser: "/api/auth/currentuser",
   completeProfile: "/api/auth/completeprofile",
   countryList: "/api/auth/countryList",
+  industries: "/api/auth/industries",
 };
 
 export const middlewareLocations = {

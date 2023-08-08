@@ -9,6 +9,8 @@ import { CompleteProfileRoute } from "./routers/completeProfile/completeProfile"
 import { CountryListRoute } from "./routers/countryList/countryList";
 import cors from "cors";
 import bodyParser from "body-parser";
+import { CreateIndustryRoute } from "./routers/industries/postIndustries";
+import { GetAllIndustriesRoute } from "./routers/industries/getIndustries";
 
 const app = express();
 app.use(bodyParser.json({ limit: "10mb" }));
@@ -22,6 +24,8 @@ app.use(GetCurrentUserRoute);
 app.use(UpdateCurrentUserRoute);
 app.use(CompleteProfileRoute);
 app.use(CountryListRoute);
+app.use(CreateIndustryRoute);
+app.use(GetAllIndustriesRoute);
 
 app.use(errorHandler);
 

@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import { body, validationResult } from "express-validator";
 import { authApiEndPoints } from "../../constants/constants";
 import { User } from "../../models/user";
-import { passwordLengths, signUpParamsAndErrors } from "./errors";
+import { passwordLengths, messages, parameters } from "./constants";
 import { UserDetails } from "../../models/userDetails";
 
 const router = express.Router();
@@ -10,13 +10,11 @@ const router = express.Router();
 router.post(
   authApiEndPoints.signUp,
   [
-    body(signUpParamsAndErrors.parameters.email)
-      .isEmail()
-      .withMessage(signUpParamsAndErrors.errors.email),
-    body(signUpParamsAndErrors.parameters.password)
+    body(parameters.email).isEmail().withMessage(messages.email),
+    body(parameters.password)
       .trim()
       .isLength({ min: passwordLengths.min, max: passwordLengths.max })
-      .withMessage(signUpParamsAndErrors.errors.password),
+      .withMessage(messages.password),
   ],
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
@@ -32,7 +30,7 @@ router.post(
 
     if (existingUser) {
       // throw new BadRequestError("User already exist");
-      return res.status(400).send({ message: "User already exists" });
+      return res.status(400).send({ message: messages.userExist });
     }
 
     const user = User.build({ email, password, companyInfo: false });
@@ -50,14 +48,12 @@ router.post(
       profileCompleted: false,
       termAccepted: false,
       mobileNumber: "",
-      retailTypeId: "",
-      retailType: "",
       address: "",
     });
 
     await userDetails.save();
 
-    res.status(201).send({ email, message: "User Created" });
+    res.status(201).send({ email, message: messages.userCreated });
   }
 );
 

@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import { body, validationResult } from "express-validator";
 import { JWT_KEY, authApiEndPoints } from "../../constants/constants";
-import { signInErrors } from "./errors";
+import { parameters, messages, roles, tokenExpiry } from "./constants";
 import jwt from "jsonwebtoken";
 import { Password } from "../../services/passwordHashing";
 import { User } from "../../models/user";
@@ -11,14 +11,14 @@ const router = express.Router();
 router.post(
   authApiEndPoints.signIn,
   [
-    body("email").isEmail().withMessage("Bad Request"),
-    body("password").isString().withMessage("Bad Request"),
+    body(parameters.email).isEmail().withMessage(messages.badRequest),
+    body(parameters.password).isString().withMessage(messages.badRequest),
     body()
       .custom((body) => {
-        const keys = ["password", "email"];
+        const keys = [parameters.password, parameters.email];
         return Object.keys(body).every((key) => keys.includes(key));
       })
-      .withMessage("Bad Request"),
+      .withMessage(messages.badRequest),
   ],
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
@@ -29,7 +29,7 @@ router.post(
 
     const UserDetails = await User.findOne({ email });
     if (!UserDetails)
-      return res.status(400).send({ message: "Bad Credentials" });
+      return res.status(400).send({ message: messages.badCredentials });
 
     const isPasswordSame = await Password.compare(
       UserDetails.password,
@@ -37,18 +37,20 @@ router.post(
     );
 
     if (!isPasswordSame)
-      return res.status(400).send({ message: "Bad Credentials" });
+      return res.status(400).send({ message: messages.badCredentials });
 
     // Encoded Ruttvik1021 base64
     let tokenParameters = {
       email: req.body.email,
-      Role: "ORG-ADMIN",
+      Role: roles.orgAdmin,
       companyInfo: UserDetails.companyInfo,
     };
-    const token = jwt.sign(tokenParameters, JWT_KEY, { expiresIn: "12h" });
+    const token = jwt.sign(tokenParameters, JWT_KEY, {
+      expiresIn: tokenExpiry,
+    });
 
     res.status(200).send({
-      message: "Login Successful",
+      message: messages.loginSuccessful,
       token,
       companyInfo: UserDetails.companyInfo,
     });

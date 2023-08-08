@@ -5,15 +5,16 @@ export const passwordLengths = {
   max: 16,
 };
 
-export const signUpParamsAndErrors = {
-  parameters: {
-    email: "email",
-    password: "password",
-  },
-  errors: {
-    email: "Must be a valid email",
-    password: `Password must be of ${passwordLengths.min} to ${passwordLengths.max}`,
-  },
+export const parameters = {
+  email: "email",
+  password: "password",
+};
+
+export const messages = {
+  email: "Must be a valid email",
+  password: `Password must be of ${passwordLengths.min} to ${passwordLengths.max}`,
+  userExist: "User already exists",
+  userCreated: "User Created",
 };
 
 export class UserExistsError extends FormatError {

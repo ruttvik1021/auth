@@ -5,7 +5,7 @@ import {
 } from "../../constants/constants";
 import { TokenValidator } from "../../middlewares/token-handler";
 import { UserDetails } from "../../models/userDetails";
-import mongoose from "mongoose";
+import { messages } from "./constants";
 
 const router = express.Router();
 
@@ -18,8 +18,11 @@ router.get(
     const existingUser = await UserDetails.findOne({ email });
 
     if (!existingUser) {
-      res.status(404).send("No user found");
+      res.status(404).send({ message: messages.noUserFound });
     }
+
+    delete existingUser?.__v;
+    delete existingUser?._id;
 
     res.status(200).send(existingUser);
   }

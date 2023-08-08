@@ -25,6 +25,7 @@ export const TokenValidator =
           const validToken: any = jwt.verify(token, JWT_KEY);
           if (validToken) {
             req.body.details = returnSwitchCase(validToken, middlewareLocation);
+            // req.body.details = returnSwitchCase(validToken, middlewareLocation);
             next();
           }
         } catch (error: any) {

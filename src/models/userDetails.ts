@@ -10,8 +10,6 @@ interface IUserDetailsSchema {
   profileCompleted: boolean;
   termAccepted: boolean;
   mobileNumber: string;
-  retailTypeId: string;
-  retailType: string;
   aboutus?: string;
   address: string;
 }
@@ -26,8 +24,6 @@ export interface IUserDetailsDoc extends mongoose.Document {
   profileCompleted: boolean;
   termAccepted: boolean;
   mobileNumber: string;
-  retailTypeId: string;
-  retailType: string;
   aboutus?: string;
   address: string;
 }
@@ -50,7 +46,7 @@ const userDetailsSchema = new mongoose.Schema({
   organizationName: {
     type: String,
   },
-  retailTypeId: {
+  industryId: {
     type: String,
   },
   organizationId: {
@@ -63,9 +59,6 @@ const userDetailsSchema = new mongoose.Schema({
     type: Boolean,
   },
   mobileNumber: {
-    type: String,
-  },
-  retailType: {
     type: String,
   },
   aboutus: {
