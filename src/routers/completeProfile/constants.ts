@@ -41,6 +41,9 @@ export const messages = {
   addressLength: `Not more than ${length.address.max} characters`,
   emailRequired: "Email Required",
   addressRequired: "Address Required",
+  didNotFindUser: "Did not find user",
+  detailsUpdatesSuccessfully: "Details updated successfully",
+  unAuthorized: "Unauthorized",
 
   profileUpdatedSuccessfully: "Profile Updated Successfully",
 };

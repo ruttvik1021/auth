@@ -93,7 +93,13 @@ router.put(
         message: errors.array()[0].msg,
       });
     }
+
     const { email } = req.body;
+    const tokenEmail = req.body.details.decodedToken.email;
+
+    if (email !== tokenEmail) {
+      return res.status(401).send({ message: "Unauthorized" });
+    }
 
     const updateDetails = await UserDetails.findOneAndUpdate(
       { email },
@@ -104,9 +110,7 @@ router.put(
     await User.findOneAndUpdate({ email }, { $set: { companyInfo: true } });
 
     if (!updateDetails) {
-      res
-        .status(400)
-        .send({ message: currentUserMessagesAndErrors.didNotFindUser });
+      res.status(400).send({ message: messages.didNotFindUser });
     }
 
     res
