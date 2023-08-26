@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get(
   authApiEndPoints.industries,
-  TokenValidator(""),
+  TokenValidator,
   async (req: Request, res: Response) => {
     const getAllIndustries = await CreateIndutry.find();
 

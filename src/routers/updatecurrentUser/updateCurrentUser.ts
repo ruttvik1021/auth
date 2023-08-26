@@ -6,6 +6,7 @@ import {
 } from "../../constants/constants";
 import { UserDetails } from "../../models/userDetails";
 import { body, validationResult } from "express-validator";
+import { TokenValidator } from "../../middlewares/token-handler";
 
 const router = express.Router();
 
@@ -37,16 +38,17 @@ router.put(
     body("retailTypeId").optional(),
     body("accountId").notEmpty().withMessage("Bad Request"),
   ],
+  TokenValidator,
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
-    const { organizationId } = req.body;
+    const { email } = req.body.details;
 
     if (!errors.isEmpty()) {
       return res.status(400).json({ message: errors.array()[0].msg });
     }
 
     const updateDetails = await UserDetails.findOneAndUpdate(
-      { organizationId },
+      { email },
       req.body,
       { returnOriginal: false }
     );

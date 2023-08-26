@@ -11,7 +11,7 @@ const router = express.Router();
 
 router.get(
   authApiEndPoints.currentUser,
-  TokenValidator(middlewareLocations.CurrentUser),
+  TokenValidator,
   async (req: Request, res: Response) => {
     const { email } = req.body.details;
 

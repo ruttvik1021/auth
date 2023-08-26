@@ -16,19 +16,6 @@ import { messages, parameters, length } from "./constants";
 
 const router = express.Router();
 
-// interface ICompleteForm {
-//   organizationName: string;
-//   organizationLogo: string;
-//   name: string;
-//   profileCompleted: boolean;
-//   termAccepted: boolean;
-//   mobileNumber: string;
-//   retailTypeId: string;
-//   retailType: string;
-//   email: string;
-//   aboutus?: string;
-// }
-
 router.put(
   authApiEndPoints.completeProfile,
   [
@@ -70,9 +57,6 @@ router.put(
     body(parameters.industryId)
       .isString()
       .withMessage(messages.industryRequired),
-    // body(parameters.aboutus)
-    //   .isLength({ max: length.aboutUs.max })
-    //   .withMessage(messages.aboutUsLength),
     body(parameters.email)
       .isEmail()
       .notEmpty()
@@ -84,7 +68,7 @@ router.put(
       .notEmpty()
       .withMessage(messages.addressRequired),
   ],
-  TokenValidator(""),
+  TokenValidator,
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
 
@@ -95,11 +79,6 @@ router.put(
     }
 
     const { email } = req.body;
-    const tokenEmail = req.body.details.decodedToken.email;
-
-    if (email !== tokenEmail) {
-      return res.status(401).send({ message: "Unauthorized" });
-    }
 
     const updateDetails = await UserDetails.findOneAndUpdate(
       { email },
