@@ -86,7 +86,15 @@ router.put(
       { returnOriginal: false }
     );
 
-    await User.findOneAndUpdate({ email }, { $set: { companyInfo: true } });
+    await User.findOneAndUpdate(
+      { email },
+      {
+        $set: {
+          companyInfo: true,
+          organizationId: updateDetails?.organizationId,
+        },
+      }
+    );
 
     if (!updateDetails) {
       res.status(400).send({ message: messages.didNotFindUser });

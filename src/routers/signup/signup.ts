@@ -2,8 +2,8 @@ import express, { Request, Response } from "express";
 import { body, validationResult } from "express-validator";
 import { authApiEndPoints } from "../../constants/constants";
 import { User } from "../../models/user";
-import { passwordLengths, messages, parameters } from "./constants";
 import { UserDetails } from "../../models/userDetails";
+import { messages, parameters, passwordLengths } from "./constants";
 
 const router = express.Router();
 
@@ -29,13 +29,11 @@ router.post(
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-      // throw new BadRequestError("User already exist");
       return res.status(400).send({ message: messages.userExist });
     }
 
     const user = User.build({ email, password, companyInfo: false });
 
-    // await userDetails.save()
     await user.save();
 
     const userDetails = UserDetails.build({

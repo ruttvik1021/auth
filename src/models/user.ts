@@ -5,12 +5,14 @@ interface IAttributes {
   email: string;
   password: string;
   companyInfo: boolean;
+  organizationId?: string;
 }
 
 interface IUserDoc extends mongoose.Document {
   email: string;
   password: string;
   companyInfo: boolean;
+  organizationId?: string;
 }
 
 interface IUserModel extends mongoose.Model<IUserDoc> {
@@ -29,6 +31,9 @@ const userSchema = new mongoose.Schema(
     },
     companyInfo: {
       type: Boolean,
+    },
+    organizationId: {
+      type: String,
     },
   },
   {

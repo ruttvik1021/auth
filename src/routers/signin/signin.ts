@@ -5,6 +5,7 @@ import { parameters, messages, roles, tokenExpiry } from "./constants";
 import jwt from "jsonwebtoken";
 import { Password } from "../../services/passwordHashing";
 import { User } from "../../models/user";
+import { UserDetails } from "../../models/userDetails";
 
 const router = express.Router();
 
@@ -27,14 +28,12 @@ router.post(
       return res.status(400).send({ message: errors.array()[0].msg });
     const { email, password } = req.body;
 
-    const UserDetails = await User.findOne({ email });
-    if (!UserDetails)
+    const user = await User.findOne({ email });
+    const userDetails = await UserDetails.findOne({ email });
+    if (!user)
       return res.status(400).send({ message: messages.badCredentials });
 
-    const isPasswordSame = await Password.compare(
-      UserDetails.password,
-      password
-    );
+    const isPasswordSame = await Password.compare(user.password, password);
 
     if (!isPasswordSame)
       return res.status(400).send({ message: messages.badCredentials });
@@ -43,7 +42,9 @@ router.post(
     let tokenParameters = {
       email: req.body.email,
       Role: roles.orgAdmin,
-      companyInfo: UserDetails.companyInfo,
+      companyInfo: user.companyInfo,
+      organizationId: userDetails?.organizationId || "",
+      userId: user._id,
     };
     const token = jwt.sign(tokenParameters, JWT_KEY, {
       expiresIn: tokenExpiry,
@@ -52,7 +53,7 @@ router.post(
     res.status(200).send({
       message: messages.loginSuccessful,
       token,
-      companyInfo: UserDetails.companyInfo,
+      companyInfo: user.companyInfo,
     });
   }
 );
