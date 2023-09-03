@@ -16,7 +16,7 @@ const app = express();
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 app.use(cors());
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 app.use(SignInApiRoute);
 app.use(SignUpApiRoute);
