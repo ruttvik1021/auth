@@ -20,3 +20,4 @@ export const currentUserMessagesAndErrors = {
 };
 
 export const JWT_KEY = process.env.JWT_KEY!;
+// export const JWT_KEY = "UnV0dHZpazEwMjE=";
